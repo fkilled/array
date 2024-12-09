@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Insert para Oracle</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #C69ED3 0%, #ECDFF0 100%);
+            color: #4e4e4e;
+            padding: 20px;
+        }
+        header {
+            background-color: #6A4C9C;
+            padding: 20px;
+            text-align: center;
+        }
+        header img {
+            max-width: 200px;
+        }
+        h1 {
+            color: #ffffff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin: 10px 0;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #005b99;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #003366;
+        }
+        #reset-button {
+            background-color: #e94e77;
+            margin-top: 20px;
+        }
+        #reset-button:hover {
+            background-color: #c2365c;
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            display: none;
+        }
+        .data-inputs {
+            margin: 20px 0;
+        }
+        .insert-output {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: none;
+            white-space: pre-line; /* Preserve formatting, including line breaks */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://www.avatel.es/wp-content/uploads/2022/06/logo-avatel.svg?x36947" alt="Logo de Avatel">
+        <h1>Generador de Insert para Oracle</h1>
+    </header>
+
+    <div class="container">
+        <p><strong>Explicación:</strong> Esta página web te permite generar fácilmente consultas SQL de tipo `INSERT` para Oracle. Solo tienes que ingresar el nombre de la tabla y las columnas, así como los valores de cada columna, y se generará la consulta `INSERT` correspondiente. Además, si deseas omitir algún valor, puedes escribir la palabra <code>NULL</code> en el campo correspondiente y este valor será ignorado al generar la consulta.</p>
+
+        <form id="insert-form">
+            <!-- Esquema (opcional) -->
+            <label for="schema">Nombre del Esquema (opcional):</label>
+            <input type="text" id="schema" name="schema" placeholder="Esquema de la base de datos (opcional)">
+
+            <!-- Nombre de la tabla -->
+            <label for="table">Nombre de la Tabla:</label>
+            <input type="text" id="table" name="table" placeholder="Nombre de la tabla (requerido)" required>
+
+            <!-- Listado de columnas -->
+            <label for="columns">Listado de Columnas (una columna por línea):</label>
+            <textarea id="columns" name="columns" placeholder="Escribe aquí las columnas (una por línea), por ejemplo: columna1, columna2, columna3" maxlength="1000" required></textarea>
+            <span id="columns-error" class="error-message">Por favor, ingresa al menos una columna.</span>
+
+            <!-- Botón para generar los campos de entrada -->
+            <button type="button" id="generate-columns" onclick="generateColumnInputs()">Generar Columnas</button>
+
+            <!-- Contenedor donde se generarán los campos de datos por columna -->
+            <div id="data-container" class="data-inputs"></div>
+
+            <!-- Botón para generar el INSERT -->
+            <button type="button" id="generate-insert" onclick="generateInsert()" style="display: none;">Generar Insert</button>
+
+            <!-- Botón para restablecer el formulario -->
+            <button type="button" id="reset-button" onclick="resetForm()">Restablecer</button>
+        </form>
+
+        <!-- Caja donde se mostrará el resultado del Insert generado -->
+        <div class="insert-output" id="output"></div>
+    </div>
+
+    <script>
+        // Genera los campos de entrada para cada columna
+        function generateColumnInputs() {
+            const columnsText = document.getElementById('columns').value.trim();
+            const columnsError = document.getElementById('columns-error');
+            const dataContainer = document.getElementById('data-container');
+            const generateInsertButton = document.getElementById('generate-insert');
+
+            if (!columnsText) {
+                columnsError.style.display = 'block';
+                return;
+            } else {
+                columnsError.style.display = 'none';
+            }
+
+            const columns = columnsText.split('\n').map(col => col.trim()).filter(col => col.length > 0);
+            dataContainer.innerHTML = '';
+
+            columns.forEach(col => {
+                const label = document.createElement('label');
+                label.textContent = `Valores para columna "${col}" (uno por línea):`;
+                const textarea = document.createElement('textarea');
+                textarea.placeholder = `Ingrese valores para ${col}`;
+                dataContainer.appendChild(label);
+                dataContainer.appendChild(textarea);
+            });
+
+            // Mostrar el botón para generar el insert cuando todo esté listo
+            generateInsertButton.style.display = 'block';
+        }
+
+        // Función para generar el Insert basado en los valores de las columnas
+        function generateInsert() {
+            const schema = document.getElementById('schema').value.trim();
+            const table = document.getElementById('table').value.trim();
+            const columnsText = document.getElementById('columns').value.trim();
+            const output = document.getElementById('output');
+
+            if (!schema || !table || !columnsText) {
+                alert('Por favor, complete el nombre del esquema, la tabla y las columnas.');
+                return;
+            }
+
+            const columns = columnsText.split('\n').map(col => col.trim()).filter(col => col.length > 0);
+            const values = [];
+            const textareas = document.querySelectorAll('#data-container textarea');
+
+            textareas.forEach((textarea, index) => {
+                // Reemplazar la palabra "NULL" con un valor vacío
+                values.push(textarea.value.trim().split('\n').map(value => value.trim().toUpperCase() === 'NULL' ? '' : value.trim()));
+            });
+
+            if (values.some(v => v.length !== values[0].length)) {
+                alert('Todos los campos de columna deben tener el mismo número de valores.');
+                return;
+            }
+
+            let insertQueries = '';
+            for (let i = 0; i < values[0].length; i++) {
+                let insertQuery = `INSERT INTO ${schema ? schema + '.' : ''}${table} (${columns.join(', ')}) VALUES `;
+                const valueRow = values.map(colValues => `'${colValues[i]}'`);
+                insertQuery += `(${valueRow.join(', ')})`;
+                insertQueries += insertQuery + ';\n\n'; // Añadir salto de línea extra entre las consultas
+            }
+
+            output.textContent = insertQueries;
+            output.style.display = 'block';
+        }
+
+        // Función para restablecer el formulario
+        function resetForm() {
+            document.getElementById('insert-form').reset();
+            document.getElementById('data-container').innerHTML = '';
+            document.getElementById('generate-insert').style.display = 'none';
+            document.getElementById('output').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
