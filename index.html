@@ -3,55 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Herramientas SQL</title>
+    <title>Página de Inicio</title>
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            padding: 0; 
             background: linear-gradient(135deg, #C69ED3 0%, #ECDFF0 100%);
             color: #4e4e4e;
-            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
         }
 
-        header {
-            background-color: #6A4C9C;
-            padding: 20px;
+        header { 
+            background-color: #6A4C9C; 
+            padding: 20px; 
+            text-align: center; 
+        }
+
+        header img { 
+            max-width: 200px; 
+        }
+
+        h1 { 
+            color: #ffffff; 
+            font-size: 2.5em; 
+            font-weight: 600; 
+            margin-top: 10px;
+        }
+
+        .container { 
+            background-color: #ffffff; 
+            border-radius: 15px; 
+            padding: 40px; 
+            width: 90%;
+            max-width: 1000px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            margin: 20px auto;
             text-align: center;
         }
 
-        header img {
-            max-width: 200px;
-        }
-
-        h1 {
-            color: #ffffff;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
+        p {
+            font-size: 1.2em;
+            color: #6a6a6a;
+            line-height: 1.5;
+            margin-bottom: 20px;
         }
 
         .button {
-            background-color: #005b99;
+            background-color: #8e4da5;
             color: white;
-            padding: 15px 30px;
-            margin: 10px;
-            border: none;
-            border-radius: 8px;
+            padding: 14px 20px;
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: 600;
+            border-radius: 12px; 
             cursor: pointer;
             text-decoration: none;
-            font-size: 18px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
             display: inline-block;
-            transition: background-color 0.3s ease;
         }
 
         .button:hover {
-            background-color: #003366;
+            background-color: #a05eb5;
+            transform: scale(1.05);
         }
 
         .button:focus {
             outline: none;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logo-container img {
+            max-width: 150px;
+            height: auto;
+        }
+
+        .watermark {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.4);
+            font-style: italic;
         }
     </style>
 </head>
@@ -59,14 +103,14 @@
 
 <header>
     <img src="https://www.avatel.es/wp-content/uploads/2022/06/logo-avatel.svg?x36947" alt="Logo de Avatel">
-    <h1>Página de Inicio</h1>
+    <h1>Herramientas Sql</h1>
 </header>
 
 <div class="container">
-    <p>Bienvenido a la página principal. Usa los botones a continuación para navegar a otras páginas de herramientas:</p>
+    <p>Bienvenido a la página principal. Usa los botones a continuación para navegar a otras páginas:</p>
 
-    <a href="insert.html" class="button">Generador de Inserts</a>
-    <a href="array.html" class="button">Generador de Arrays</a>
+    <a href="insert.html" class="button">Generador de Insert</a>
+    <a href="array.html" class="button">Generador de  Array</a>
 </div>
 
 </body>
